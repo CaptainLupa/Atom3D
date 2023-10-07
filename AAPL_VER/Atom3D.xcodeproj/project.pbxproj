@@ -7,20 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2102AB422ACE070900061408 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2102AB402ACE061E00061408 /* libglfw.3.3.dylib */; };
-		2102AB452ACE082C00061408 /* mtl_engine.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB442ACE082C00061408 /* mtl_engine.mm */; };
-		2102AB482ACE297300061408 /* mtl_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB472ACE297300061408 /* mtl_impl.cpp */; };
-		2102AB4A2ACE2A3500061408 /* simple.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB492ACE2A3500061408 /* simple.metal */; };
-		2102AB502ACEE2AD00061408 /* stbi_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB4F2ACEE2AD00061408 /* stbi_image.cpp */; };
-		2102AB532ACEE30900061408 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB512ACEE30900061408 /* Texture.cpp */; };
-		2188D81F2ACDF3F6007A1E53 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2188D81E2ACDF3F6007A1E53 /* main.mm */; };
+		2102AB452ACE082C00061408 /* AtomCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB442ACE082C00061408 /* AtomCore.mm */; settings = {COMPILER_FLAGS = "-v"; }; };
+		2102AB482ACE297300061408 /* mtl_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB472ACE297300061408 /* mtl_impl.cpp */; settings = {COMPILER_FLAGS = "-v"; }; };
+		2102AB4A2ACE2A3500061408 /* simple.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB492ACE2A3500061408 /* simple.metal */; settings = {COMPILER_FLAGS = "-v"; }; };
+		2102AB502ACEE2AD00061408 /* stbi_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB4F2ACEE2AD00061408 /* stbi_image.cpp */; settings = {COMPILER_FLAGS = "-v"; }; };
+		2102AB532ACEE30900061408 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB512ACEE30900061408 /* Texture.cpp */; settings = {COMPILER_FLAGS = "-v"; }; };
+		213BF9052AD0D34C00E7DA2B /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 213BF9042AD0D34C00E7DA2B /* libglfw.3.3.dylib */; };
+		213BF9062AD0DB3100E7DA2B /* libglfw.3.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 213BF9042AD0D34C00E7DA2B /* libglfw.3.3.dylib */; };
+		2188D81F2ACDF3F6007A1E53 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2188D81E2ACDF3F6007A1E53 /* main.mm */; settings = {COMPILER_FLAGS = "-v"; }; };
 		2188D8282ACDF4AF007A1E53 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2188D8272ACDF4AF007A1E53 /* Foundation.framework */; };
 		2188D82A2ACDF4B6007A1E53 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2188D8292ACDF4B6007A1E53 /* Metal.framework */; };
 		2188D82C2ACDF4BC007A1E53 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2188D82B2ACDF4BC007A1E53 /* QuartzCore.framework */; };
-		21ADDE472ACF4E1200719C76 /* AAPLMathUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21ADDE452ACF4E1200719C76 /* AAPLMathUtilities.cpp */; };
+		21ADDE472ACF4E1200719C76 /* AAPLMathUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21ADDE452ACF4E1200719C76 /* AAPLMathUtilities.cpp */; settings = {COMPILER_FLAGS = "-v"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		213BF9072AD0DB3100E7DA2B /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				213BF9062AD0DB3100E7DA2B /* libglfw.3.3.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2188D8192ACDF3F6007A1E53 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -33,9 +45,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2102AB402ACE061E00061408 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../../opt/homebrew/Cellar/glfw/3.3.8/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
-		2102AB432ACE080200061408 /* mtl_engine.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mtl_engine.hpp; sourceTree = "<group>"; };
-		2102AB442ACE082C00061408 /* mtl_engine.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = mtl_engine.mm; sourceTree = "<group>"; };
+		2102AB432ACE080200061408 /* AtomCore.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AtomCore.hpp; sourceTree = "<group>"; };
+		2102AB442ACE082C00061408 /* AtomCore.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AtomCore.mm; sourceTree = "<group>"; };
 		2102AB462ACE267D00061408 /* Atom3D.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Atom3D.entitlements; sourceTree = "<group>"; };
 		2102AB472ACE297300061408 /* mtl_impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mtl_impl.cpp; sourceTree = "<group>"; };
 		2102AB492ACE2A3500061408 /* simple.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = simple.metal; sourceTree = "<group>"; };
@@ -45,6 +56,7 @@
 		2102AB522ACEE30900061408 /* Texture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Texture.hpp; sourceTree = "<group>"; };
 		2102AB542ACEEC9600061408 /* VertexData.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VertexData.hpp; sourceTree = "<group>"; };
 		2102AB562ACEEEA200061408 /* NickWiz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = NickWiz.png; sourceTree = "<group>"; };
+		213BF9042AD0D34C00E7DA2B /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../../../opt/homebrew/Cellar/glfw/3.3.8/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
 		2188D81B2ACDF3F6007A1E53 /* Atom3D */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Atom3D; sourceTree = BUILT_PRODUCTS_DIR; };
 		2188D81E2ACDF3F6007A1E53 /* main.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		2188D8252ACDF443007A1E53 /* metal-cpp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "metal-cpp"; sourceTree = "<group>"; };
@@ -61,7 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2102AB422ACE070900061408 /* libglfw.3.3.dylib in Frameworks */,
+				213BF9052AD0D34C00E7DA2B /* libglfw.3.3.dylib in Frameworks */,
 				2188D82C2ACDF4BC007A1E53 /* QuartzCore.framework in Frameworks */,
 				2188D82A2ACDF4B6007A1E53 /* Metal.framework in Frameworks */,
 				2188D8282ACDF4AF007A1E53 /* Foundation.framework in Frameworks */,
@@ -76,8 +88,8 @@
 			children = (
 				2102AB552ACEEDEE00061408 /* assets */,
 				2188D81E2ACDF3F6007A1E53 /* main.mm */,
-				2102AB432ACE080200061408 /* mtl_engine.hpp */,
-				2102AB442ACE082C00061408 /* mtl_engine.mm */,
+				2102AB432ACE080200061408 /* AtomCore.hpp */,
+				2102AB442ACE082C00061408 /* AtomCore.mm */,
 				2102AB472ACE297300061408 /* mtl_impl.cpp */,
 				2102AB492ACE2A3500061408 /* simple.metal */,
 				2102AB512ACEE30900061408 /* Texture.cpp */,
@@ -146,7 +158,7 @@
 		2188D8262ACDF4AF007A1E53 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2102AB402ACE061E00061408 /* libglfw.3.3.dylib */,
+				213BF9042AD0D34C00E7DA2B /* libglfw.3.3.dylib */,
 				2188D82B2ACDF4BC007A1E53 /* QuartzCore.framework */,
 				2188D8292ACDF4B6007A1E53 /* Metal.framework */,
 				2188D8272ACDF4AF007A1E53 /* Foundation.framework */,
@@ -164,6 +176,7 @@
 				2188D8172ACDF3F6007A1E53 /* Sources */,
 				2188D8182ACDF3F6007A1E53 /* Frameworks */,
 				2188D8192ACDF3F6007A1E53 /* CopyFiles */,
+				213BF9072AD0DB3100E7DA2B /* Embed Libraries */,
 			);
 			buildRules = (
 			);
@@ -213,7 +226,7 @@
 			files = (
 				2188D81F2ACDF3F6007A1E53 /* main.mm in Sources */,
 				2102AB482ACE297300061408 /* mtl_impl.cpp in Sources */,
-				2102AB452ACE082C00061408 /* mtl_engine.mm in Sources */,
+				2102AB452ACE082C00061408 /* AtomCore.mm in Sources */,
 				2102AB532ACEE30900061408 /* Texture.cpp in Sources */,
 				21ADDE472ACF4E1200719C76 /* AAPLMathUtilities.cpp in Sources */,
 				2102AB4A2ACE2A3500061408 /* simple.metal in Sources */,
@@ -281,6 +294,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = v;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -335,6 +349,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = v;
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -343,6 +358,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Atom3D/Apple/Atom3D.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 88QTKGKS2R;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -354,6 +370,7 @@
 					"$(inherited)",
 					/opt/homebrew/Cellar/glfw/3.3.8/lib,
 				);
+				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -362,6 +379,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Atom3D/Apple/Atom3D.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 88QTKGKS2R;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -373,6 +391,7 @@
 					"$(inherited)",
 					/opt/homebrew/Cellar/glfw/3.3.8/lib,
 				);
+				OTHER_LDFLAGS = "-v";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

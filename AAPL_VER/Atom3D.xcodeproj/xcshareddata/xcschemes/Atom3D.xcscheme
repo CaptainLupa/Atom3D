@@ -35,7 +35,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/jenseckert/dev/Xcode_Shit/Atom3D/Atom3D"
+      customWorkingDirectory = "/Users/jenseckert/dev/Xcode_Shit/Atom3D/AAPL_VER/Atom3D"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"

@@ -13,15 +13,19 @@
 #include "stb_image.h"
 #include <iostream>
 
-class Texture {
-public:
-    Texture(const char*, MTL::Device*);
-    ~Texture();
-    MTL::Texture* texture;
-    int width, height, channels;
-    
-private:
-    MTL::Device* mDevice;
+namespace Atom {
+    class Texture {
+    public:
+        Texture(const char*, MTL::Device*);
+        ~Texture();
+        MTL::Texture* texture;
+        int width, height, channels;
+        
+    private:
+        MTL::Device* mDevice;
+    };
 };
+
+
 
 #endif /* Texture_hpp */

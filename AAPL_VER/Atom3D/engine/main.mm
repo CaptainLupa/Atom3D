@@ -5,14 +5,14 @@
 //  Created by Jens Eckert on 10/4/23.
 //
 
-#include "mtl_engine.hpp"
+#include "AtomCore.hpp"
 
 #include <iostream>
 
 int main() {
     
     @autoreleasepool {
-        MTLEngine engine;
+        Atom::AtomCore engine;
         
         engine.init();
         engine.run();
