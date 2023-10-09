@@ -1,5 +1,5 @@
 # Atom3D
-Cross Platform Graphics Engine for Metal and (eventually) Vulkan graphics API's
+Cross Platform Graphics Engine for Metal and Vulkan graphics API's
 
 ## Status
 Apple: Working cube rotate. Trying to figure out indexed cube rendering with a texture.
