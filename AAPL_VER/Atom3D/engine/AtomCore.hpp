@@ -35,62 +35,62 @@
 
 namespace Atom {
     
-    class AtomCore {
-    public:
-        AtomCore();
+class AtomCore {
+public:
+    AtomCore() = default;
+    
+    void init();
+    void run();
+    void cleanup();
+    void setSize(float, float);
+private:
+    void initDevice();
+    void initWindow();
+    
+    void createTriangle();
+    void createSquare();
+    void createCube();
+    
+    void createDefaultLib();
+    void createCommandQueue();
+    void createRenderPipeline();
+    
+    void createBuffers();
+    void createRenderPassDescriptor();
+    void createDepthAndMSAATextures();
+    
+    void updateRenderPassDescriptor();
+    
+    void encodeRenderCommand(MTL::RenderCommandEncoder*);
+    void draw();
+    
+    static void frameBufferSizeCallback(GLFWwindow*, int, int);
+    void resizeFrameBuffer(int, int);
+    
+    MTL::Device* mDevice;
+    GLFWwindow* mGlfwWindow;
+    NSWindow* mMetalWindow;
+    CAMetalLayer* mMetalLayer;
+    CA::MetalDrawable* mMetalDrawable;
+    
+    MTL::Library* mDefaultLib;
+    MTL::CommandQueue* mCommandQueue;
+    MTL::CommandBuffer* mCommandBuffer;
+    MTL::RenderPipelineState* mRenderPipelineState;
+    
+    MTL::Buffer* mVertexBuffer;
+    MTL::Buffer* mTransformBuffer;
+    MTL::DepthStencilState* mDepthStencilState;
+    MTL::RenderPassDescriptor* mRenderPassDescriptor;
+    MTL::Texture* mMSAARenderTargetTexture;
+    MTL::Texture* mDepthTexture;
+    
+    Texture* mTexture;
+    
+    simd_float2 mViewSize = {800, 800};
         
-        void init();
-        void run();
-        void cleanup();
-        void setSize(float, float);
-    private:
-        void initDevice();
-        void initWindow();
-        
-        void createTriangle();
-        void createSquare();
-        void createCube();
-        
-        void createDefaultLib();
-        void createCommandQueue();
-        void createRenderPipeline();
-        
-        void createBuffers();
-        void createRenderPassDescriptor();
-        void createDepthAndMSAATextures();
-        
-        void updateRenderPassDescriptor();
-        
-        void encodeRenderCommand(MTL::RenderCommandEncoder*);
-        void draw();
-        
-        static void frameBufferSizeCallback(GLFWwindow*, int, int);
-        void resizeFrameBuffer(int, int);
-        
-        MTL::Device* mDevice;
-        GLFWwindow* mGlfwWindow;
-        NSWindow* mMetalWindow;
-        CAMetalLayer* mMetalLayer;
-        CA::MetalDrawable* mMetalDrawable;
-        
-        MTL::Library* mDefaultLib;
-        MTL::CommandQueue* mCommandQueue;
-        MTL::CommandBuffer* mCommandBuffer;
-        MTL::RenderPipelineState* mRenderPipelineState;
-        
-        MTL::Buffer* mVertexBuffer; 
-        MTL::Buffer* mTransformBuffer;
-        MTL::DepthStencilState* mDepthStencilState;
-        MTL::RenderPassDescriptor* mRenderPassDescriptor;
-        MTL::Texture* mMSAARenderTargetTexture;
-        MTL::Texture* mDepthTexture;
-        
-        Texture* mTexture;
-        
-        simd_float2 mViewSize = {800, 800};
-        
-        int mSampleCount = 4;
-    };
+    int mSampleCount = 4;
+};
     
 };
 
