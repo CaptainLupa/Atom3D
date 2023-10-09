@@ -1,8 +1,0 @@
-﻿  AtomCore.cpp
-  main.cpp
-  Previous IPDB not found, fall back to full compilation.
-LINK : warning LNK4098: defaultlib 'MSVCRTD' conflicts with use of other libs; use /NODEFAULTLIB:library
-  Generating code
-  All 178 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
-  Atom3D.vcxproj -> C:\DevSus\notSchool\Atom3D\VULKAN_VER\Atom3D\x64\Release\Atom3D.exe

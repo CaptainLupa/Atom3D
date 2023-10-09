@@ -33,19 +33,21 @@ void AtomCore::initVulkan() {
 void AtomCore::createInstance() {
 	if (mEnableValidationLayers && !checkValidationLayerSupport())
 		throw std::runtime_error("Validation layers requested, but no available.\n");
-	
-	VkApplicationInfo appInfo = {};
 
-	appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+	vk::ApplicationInfo appInfo = {};
+
+	appInfo.sType = vk::StructureType::eApplicationInfo;
 	appInfo.pApplicationName = "Atom3D";
-	appInfo.applicationVersion = VK_MAKE_VERSION(0, 1, 1);
-	appInfo.pEngineName = "No Engine";
-	appInfo.engineVersion = VK_MAKE_VERSION(0, 1, 1);
+	appInfo.applicationVersion = VK_MAKE_API_VERSION(0, 0, 0, 1);
+	appInfo.pEngineName = "Giggity";
+	appInfo.engineVersion = VK_MAKE_API_VERSION(0, 0, 0, 1);
 	appInfo.apiVersion = VK_API_VERSION_1_3;
 
-	VkInstanceCreateInfo createInfo = {};
+	// vk::InstanceCreateInfo createInfo = {};
 
-	createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+	auto createInfo = vk::InstanceCreateInfo();
+
+	createInfo.sType = vk::StructureType::eInstanceCreateInfo;
 	createInfo.pApplicationInfo = &appInfo;
 
 	const auto extensions = getRequiredExtensions();
@@ -54,28 +56,64 @@ void AtomCore::createInstance() {
 	createInfo.ppEnabledExtensionNames = extensions.data();
 
 	// For debug messages that occur when instance is created or destroyed.
-	VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
+	// VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = {};
+	vk::DebugUtilsMessengerCreateInfoEXT debugCI = {};
 
 	if (mEnableValidationLayers) {
 		createInfo.enabledLayerCount = static_cast<uint32_t>(mValidationLayers.size());
 		createInfo.ppEnabledLayerNames = mValidationLayers.data();
 
-		populateDebugMessengerCreateInfo(debugCreateInfo);
-		createInfo.pNext = &debugCreateInfo;
+		populateDebugMessengerCreateInfo(debugCI);
+		createInfo.pNext = &debugCI;
 	} else {
 		createInfo.enabledLayerCount = 0;
 
 		createInfo.pNext = nullptr;
 	}
 
-#ifdef _DEBUG
-	outputExtensionStatus(extensions);
-#endif
+	if (mEnableValidationLayers)
+		outputExtensionStatus(extensions);
+
 
 	//Now create instance.
-	if (vkCreateInstance(&createInfo, nullptr, &mInstance) != VK_SUCCESS) {
-		throw std::runtime_error("Failed to create mInstance in AtomCore::createInstance,\n");
+	// if (vkCreateInstance(&createInfo, nullptr, &mInstance) != VK_SUCCESS) {
+
+	auto ir = vk::createInstance(createInfo);
+	
+	vk::resultCheck(ir.result, "Failed to create instance.\n");
+
+	mInstance = ir.value;
+}
+
+
+void AtomCore::createSurface() {
+	auto pSurf = static_cast<VkSurfaceKHR>(mSurface);
+
+	if (glfwCreateWindowSurface(mInstance, mWindow, nullptr, &pSurf) != VK_SUCCESS)
+		throw std::runtime_error("Failed to create window surface");
+}
+
+
+void AtomCore::pickPhysicalDevice() {
+	auto devices = mInstance.enumeratePhysicalDevices().value;
+
+	//vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr);
+
+	if (devices.empty())
+		throw std::runtime_error("No GPUs with Vulkan support!");
+
+	//std::vector<VkPhysicalDevice> devices(deviceCount);
+	//vkEnumeratePhysicalDevices(mInstance, &deviceCount, devices.data());
+
+	for (const auto& device : devices) {
+		if (isDeviceGucci(device)) {
+			mPhysicalDevice = device;
+			break;
+		}
 	}
+
+	if (mPhysicalDevice == VK_NULL_HANDLE)
+		throw std::runtime_error("Failed to find suitable GPU.");
 }
 
 
@@ -119,14 +157,10 @@ void AtomCore::createLogicalDevice() {
 	if (vkCreateDevice(mPhysicalDevice, &createInfo, nullptr, &mLogicalDevice) != VK_SUCCESS)
 		throw std::runtime_error("Failed to create logical device.\n");
 
+	std::cout << indices.graphicsFamily.value() << ", " << indices.presentFamily.value() << std::endl;
+
 	vkGetDeviceQueue(mLogicalDevice, indices.graphicsFamily.value(), 0, &mGraphicsQueue);
 	vkGetDeviceQueue(mLogicalDevice, indices.presentFamily.value(), 0, &mPresentQueue);
-}
-
-
-void AtomCore::createSurface() {
-	if (glfwCreateWindowSurface(mInstance, mWindow, nullptr, &mSurface) != VK_SUCCESS)
-		throw std::runtime_error("Failed to create window surface.\n");
 }
 
 
@@ -434,13 +468,15 @@ void AtomCore::createSyncObjects() {
 }
 
 void AtomCore::drawFrame() {
-	vkWaitForFences(mLogicalDevice, 1, &mInFlightF, VK_TRUE, UINT64_MAX);
-	vkResetFences(mLogicalDevice, 1, &mInFlightF);
+	mLogicalDevice.waitForFences(1, &mInFlightF, vk::True, UINT64_MAX);
+	mLogicalDevice.resetFences(1, &mInFlightF);
 
 	uint32_t imageIndex;
-	vkAcquireNextImageKHR(mLogicalDevice, mSwapchain, UINT64_MAX, mImageAvailableS, VK_NULL_HANDLE, &imageIndex);
+	mLogicalDevice.acquireNextImageKHR(mSwapchain, UINT64_MAX, mImageAvailableS, VK_NULL_HANDLE, &imageIndex);
+	// vkAcquireNextImageKHR(mLogicalDevice, mSwapchain, UINT64_MAX, mImageAvailableS, VK_NULL_HANDLE, &imageIndex);
 
-	vkResetCommandBuffer(mCommandBuffer, 0);
+	mCommandBuffer.reset();
+	// vkResetCommandBuffer(mCommandBuffer, 0);
 
 	recordCommandBuffer(mCommandBuffer, imageIndex);
 
@@ -475,35 +511,13 @@ void AtomCore::drawFrame() {
 }
 
 
-void AtomCore::pickPhysicalDevice() {
-	uint32_t deviceCount = 0;
-
-	vkEnumeratePhysicalDevices(mInstance, &deviceCount, nullptr);
-
-	if (deviceCount == 0)
-		throw std::runtime_error("No GPUs with Vulkan support!");
-
-	std::vector<VkPhysicalDevice> devices(deviceCount);
-	vkEnumeratePhysicalDevices(mInstance, &deviceCount, devices.data());
-
-	for (const auto& device: devices) {
-		if (isDeviceGucci(device)) {
-			mPhysicalDevice = device;
-			break;
-		}
-	}
-
-	if (mPhysicalDevice == VK_NULL_HANDLE)
-		throw std::runtime_error("Failed to find suitable GPU.");
-}
-
-
-bool AtomCore::isDeviceGucci(VkPhysicalDevice device) const {
+bool AtomCore::isDeviceGucci(vk::PhysicalDevice device) const {
 	const auto indices = findQueueFamilies(device);
 
 	const auto extensionSupported = checkDeviceExtensionSupport(device);
 
 	bool swapChainGucci = false;
+
 	if (extensionSupported) {
 		const auto [_, formats, presentModes] = querySwapChainSupport(device);
 		swapChainGucci = !formats.empty() && !presentModes.empty();
@@ -513,19 +527,20 @@ bool AtomCore::isDeviceGucci(VkPhysicalDevice device) const {
 }
 
 
-QueueFamilyIndices AtomCore::findQueueFamilies(VkPhysicalDevice device) const {
+QueueFamilyIndices AtomCore::findQueueFamilies(vk::PhysicalDevice device) const {
 	QueueFamilyIndices indices;
 
 	uint32_t familyCount = 0;
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &familyCount, nullptr);
+	auto properties = device.getQueueFamilyProperties();
+	//vkGetPhysicalDeviceQueueFamilyProperties(device, &familyCount, nullptr);
 
-	std::vector<VkQueueFamilyProperties> properties(familyCount);
-	vkGetPhysicalDeviceQueueFamilyProperties(device, &familyCount, properties.data());
+	//std::vector<VkQueueFamilyProperties> properties(familyCount);
+	//vkGetPhysicalDeviceQueueFamilyProperties(device, &familyCount, properties.data());
 
 	int i = 0;
 	VkBool32 presentSupport = false;
 	for (const auto& property: properties) {
-		if (property.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+		if (property.queueFlags & vk::QueueFlagBits::eGraphics)
 			indices.graphicsFamily = i;
 
 		vkGetPhysicalDeviceSurfaceSupportKHR(device, i, mSurface, &presentSupport);
@@ -543,24 +558,13 @@ QueueFamilyIndices AtomCore::findQueueFamilies(VkPhysicalDevice device) const {
 }
 
 
-SwapChainSupportDetails AtomCore::querySwapChainSupport(VkPhysicalDevice device) const {
+SwapChainSupportDetails AtomCore::querySwapChainSupport(vk::PhysicalDevice device) const {
 	SwapChainSupportDetails details;
 
-	vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, mSurface, &details.capabilities);
+	auto r = device.getSurfaceCapabilitiesKHR(mSurface, &details.capabilities);
 
-	uint32_t formatCount, presentModeCount;
-	vkGetPhysicalDeviceSurfaceFormatsKHR(device, mSurface, &formatCount, nullptr);
-	vkGetPhysicalDeviceSurfacePresentModesKHR(device, mSurface, &presentModeCount, nullptr);
-
-	if (formatCount != 0) {
-		details.formats.resize(formatCount);
-		vkGetPhysicalDeviceSurfaceFormatsKHR(device, mSurface, &formatCount, details.formats.data());
-	}
-
-	if (presentModeCount != 0) {
-		details.presentModes.resize(presentModeCount);
-		vkGetPhysicalDeviceSurfacePresentModesKHR(device, mSurface, &presentModeCount, details.presentModes.data());
-	}
+	details.formats = device.getSurfaceFormatsKHR(mSurface).value;
+	details.presentModes = device.getSurfacePresentModesKHR(mSurface).value;
 
 	return details;
 }
@@ -585,43 +589,40 @@ std::vector<char> AtomCore::readFile(const std::string& filename) {
 }
 
 
-VkShaderModule AtomCore::createShaderModule(const std::vector<char>& code) const {
-	VkShaderModuleCreateInfo createInfo = {};
-	createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-	createInfo.codeSize = code.size();
-	createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
+vk::ShaderModule AtomCore::createShaderModule(const std::vector<char>& code) const {
+	auto createInfo = vk::ShaderModuleCreateInfo();
+	// createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+	createInfo.setCodeSize(code.size());
+	createInfo.setPCode(reinterpret_cast<const uint32_t*>(code.data()));
 
-	VkShaderModule shaderModule;
-	if (vkCreateShaderModule(mLogicalDevice, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+	vk::ShaderModule shaderModule;
+	if (mLogicalDevice.createShaderModule(&createInfo, nullptr, &shaderModule) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to create shader module.\n");
 
 	return shaderModule;
 }
 
-void AtomCore::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
-	VkCommandBufferBeginInfo beginInfo = {};
-	beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-	beginInfo.flags = 0;
-	beginInfo.pInheritanceInfo = nullptr;
+void AtomCore::recordCommandBuffer(vk::CommandBuffer commandBuffer, uint32_t imageIndex) {
+	auto beginInfo = vk::CommandBufferBeginInfo();
+	// beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO; sType set by constructor in HPP impl
+	beginInfo.setFlags({});
 
-	if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS)
+	if (commandBuffer.begin(&beginInfo) != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to begin recording command buffer.\n");
 
-	VkRenderPassBeginInfo rpInfo = {};
-	rpInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	rpInfo.renderPass = mRenderPass;
-	rpInfo.framebuffer = mSwapchainFramebuffers[imageIndex];
-	rpInfo.renderArea.offset = { 0, 0 };
-	rpInfo.renderArea.extent = mSwapchainExtent;
+	auto rpInfo = vk::RenderPassBeginInfo();
+	rpInfo.setRenderPass(mRenderPass);
+	rpInfo.setFramebuffer(mSwapchainFramebuffers[imageIndex]);
+	rpInfo.setRenderArea({ {0, 0}, mSwapchainExtent });
 
-	VkClearValue clearColor = { {{0, 0, 0, 1.0f}} };
+	auto clearColor = vk::ClearValue().setColor({0, 0, 0, 1});
 	rpInfo.clearValueCount = 1;
 	rpInfo.pClearValues = &clearColor;
 
-	vkCmdBeginRenderPass(commandBuffer, &rpInfo, VK_SUBPASS_CONTENTS_INLINE);
-	vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, mGraphicsPipeline);
+	commandBuffer.beginRenderPass(&rpInfo, vk::SubpassContents::eInline);
+	commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, mGraphicsPipeline);
 
-	VkViewport viewport = {
+	vk::Viewport viewport = {
 		0,
 		0,
 		static_cast<float>(mSwapchainExtent.width),
@@ -630,27 +631,27 @@ void AtomCore::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t image
 		1
 	};
 
-	vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+	commandBuffer.setViewport(0, 1, &viewport);
 
-	VkRect2D scissor = {
+	vk::Rect2D scissor = {
 		{0, 0},
 		mSwapchainExtent
 	};
 
-	vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+	commandBuffer.setScissor(0, 1, &scissor);
 
-	vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+	commandBuffer.draw(3, 0, 1, 0);
 
-	vkCmdEndRenderPass(commandBuffer);
+	commandBuffer.endRenderPass();
 
-	if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS)
+	if (commandBuffer.end() != vk::Result::eSuccess)
 		throw std::runtime_error("Failed to record command buffer.\n");
 }
 
 
-VkSurfaceFormatKHR AtomCore::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+vk::SurfaceFormatKHR AtomCore::chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats) {
 	for (const auto& format: availableFormats) {
-		if (format.format == VK_FORMAT_B8G8R8A8_SRGB && format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+		if (format.format == vk::Format::eB8G8R8A8Srgb /*VK_FORMAT_B8G8R8A8_SRGB*/ && format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear  /*VK_COLOR_SPACE_SRGB_NONLINEAR_KHR*/) {
 			return format;
 		}
 	}
@@ -659,17 +660,16 @@ VkSurfaceFormatKHR AtomCore::chooseSwapSurfaceFormat(const std::vector<VkSurface
 }
 
 
-VkPresentModeKHR AtomCore::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availableModes) {
-	for (const auto& mode: availableModes) {
-		if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
+vk::PresentModeKHR AtomCore::chooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availableModes) {
+	for (const auto& mode: availableModes)
+		if (mode == vk::PresentModeKHR::eMailbox)
 			return mode;
-	}
 
-	return VK_PRESENT_MODE_FIFO_KHR;
+	return vk::PresentModeKHR::eFifo;
 }
 
 
-VkExtent2D AtomCore::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) const {
+vk::Extent2D AtomCore::chooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities) const {
 	if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
 		return capabilities.currentExtent;
 
@@ -707,16 +707,15 @@ bool AtomCore::checkValidationLayerSupport() const {
 }
 
 
-bool AtomCore::checkDeviceExtensionSupport(VkPhysicalDevice device) const {
-	uint32_t extensionCount;
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+bool AtomCore::checkDeviceExtensionSupport(vk::PhysicalDevice device) const {
+	const auto availableExtensions = device.enumerateDeviceExtensionProperties();
 
-	std::vector<VkExtensionProperties> availableExtensions(extensionCount);
-	vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+	if (availableExtensions.result != vk::Result::eSuccess)
+		throw std::runtime_error("Could not enumerateDeviceExtensionProperties");
 
 	std::set<std::string> requiredExtensions(mDeviceExtensions.begin(), mDeviceExtensions.end());
 
-	for (const auto& e: availableExtensions)
+	for (const auto& e: availableExtensions.value)
 		requiredExtensions.erase(e.extensionName);
 
 	return requiredExtensions.empty();
@@ -737,7 +736,7 @@ std::vector<const char*> AtomCore::getRequiredExtensions() const {
 }
 
 
-VkBool32 AtomCore::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT severity, 
+VKAPI_ATTR VkBool32 VKAPI_CALL AtomCore::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT severity, 
 								 VkDebugUtilsMessageTypeFlagsEXT type, 
 								 const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, 
 								 void* pUserData) {
@@ -751,28 +750,36 @@ VkBool32 AtomCore::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT severity
 void AtomCore::setupDebugMessenger() {
 	if (!mEnableValidationLayers) return;
 
-	VkDebugUtilsMessengerCreateInfoEXT createInfo;
+	vk::DebugUtilsMessengerCreateInfoEXT createInfo;
 	populateDebugMessengerCreateInfo(createInfo);
 
-	if (CreateDebugUtilsMessengerEXT(mInstance, &createInfo, nullptr, &mDebugMessenger) != VK_SUCCESS) {
-		throw std::runtime_error("Failed to set up debug messenger.\n");
-	}
+	pfnVkCreateDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(mInstance.getProcAddr("vkCreateDebugUtilsMessengerEXT"));
+	pfnVkDestroyDebugUtilsMessengerEXT = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(mInstance.getProcAddr("vkDestroyDebugUtilsMessengerEXT"));
+
+	assert(pfnVkCreateDebugUtilsMessengerEXT != nullptr);
+	assert(pfnVkDestroyDebugUtilsMessengerEXT != nullptr);
+
+	auto createRet = mInstance.createDebugUtilsMessengerEXT(createInfo);
+
+	if (createRet.result != vk::Result::eSuccess)
+		throw std::runtime_error("Failed to create debug messenger.");
+
+	mDebugMessenger = createRet.value;
 }
 
 
-void AtomCore::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
-	createInfo = {};
+void AtomCore::populateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& createInfo) {
+	createInfo = vk::DebugUtilsMessengerCreateInfoEXT();
 
-	createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-	createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+	createInfo.setMessageSeverity(vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose |
+								  vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning |
+								  vk::DebugUtilsMessageSeverityFlagBitsEXT::eError);
 
-	createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-		VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+	createInfo.setMessageType(vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral |
+							  vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation |
+							  vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance);
 
-	createInfo.pfnUserCallback = debugCallback;
+	createInfo.setPfnUserCallback(&debugCallback);
 	createInfo.pUserData = nullptr;
 }
 
@@ -818,31 +825,31 @@ void AtomCore::run() {
 
 void AtomCore::cleanup() const {
 	if (mEnableValidationLayers)
-		DestroyDebugUtilsMessengerEXT(mInstance, mDebugMessenger, nullptr);
+		mInstance.destroyDebugUtilsMessengerEXT(mDebugMessenger);
 
-	vkResetCommandBuffer(mCommandBuffer, 0);
-	vkFreeCommandBuffers(mLogicalDevice, mCommandPool, 1, &mCommandBuffer);
+	mCommandBuffer.reset();
+	mLogicalDevice.freeCommandBuffers(mCommandPool, 1, &mCommandBuffer);
 
-	vkDestroyCommandPool(mLogicalDevice, mCommandPool, nullptr);
-
-	vkDestroySemaphore(mLogicalDevice, mImageAvailableS, nullptr);
-	vkDestroySemaphore(mLogicalDevice, mRenderFinishedS, nullptr);
-	vkDestroyFence(mLogicalDevice, mInFlightF, nullptr);
+	mLogicalDevice.destroyCommandPool(mCommandPool);
+	mLogicalDevice.destroySemaphore(mImageAvailableS);
+	mLogicalDevice.destroySemaphore(mRenderFinishedS);
+	mLogicalDevice.destroyFence(mInFlightF);
 
 	for (const auto fb : mSwapchainFramebuffers)
-		vkDestroyFramebuffer(mLogicalDevice, fb, nullptr);
+		mLogicalDevice.destroyFramebuffer(fb);
 
-	vkDestroyRenderPass(mLogicalDevice, mRenderPass, nullptr);
-	vkDestroyPipeline(mLogicalDevice, mGraphicsPipeline, nullptr);
-	vkDestroyPipelineLayout(mLogicalDevice, mPipelineLayout, nullptr);
+	mLogicalDevice.destroyRenderPass(mRenderPass);
+	mLogicalDevice.destroyPipeline(mGraphicsPipeline);
+	mLogicalDevice.destroyPipelineLayout(mPipelineLayout);
 
 	for (const auto iv : mSwapchainImageViews)
-		vkDestroyImageView(mLogicalDevice, iv, nullptr);
+		mLogicalDevice.destroyImageView(iv);
 
-	vkDestroySwapchainKHR(mLogicalDevice, mSwapchain, nullptr);
-	vkDestroyDevice(mLogicalDevice, nullptr);
-	vkDestroySurfaceKHR(mInstance, mSurface, nullptr);
-	vkDestroyInstance(mInstance, nullptr);
+	mLogicalDevice.destroySwapchainKHR(mSwapchain);
+	mLogicalDevice.destroy();
+
+	mInstance.destroySurfaceKHR(mSurface);
+	mInstance.destroy();
 
 	glfwDestroyWindow(mWindow);
 

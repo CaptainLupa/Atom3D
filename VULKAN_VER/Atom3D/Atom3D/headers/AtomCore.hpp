@@ -1,3 +1,4 @@
+// ReSharper disable CppInconsistentNaming
 #pragma once
 
 #ifndef ATOM_CORE_HPP
@@ -12,6 +13,9 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
+#define VULKAN_HPP_NO_EXCEPTIONS
+#include <vulkan/vulkan.hpp>
+
 #include <glm/vec2.hpp>
 
 #include <iostream>
@@ -23,32 +27,26 @@
 #include <algorithm>
 #include <optional>
 #include <fstream>
+#include <cassert>
 
 namespace Atom {
 
 typedef glm::vec<2, int, glm::defaultp> vec2I;
 
-// Vulkan proxy functions.
-inline VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, 
-											const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
-											const VkAllocationCallbacks* pAllocator, 
-											VkDebugUtilsMessengerEXT* pDebugMessenger)
-{
-	const auto func = reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
+inline PFN_vkCreateDebugUtilsMessengerEXT pfnVkCreateDebugUtilsMessengerEXT;
+inline PFN_vkDestroyDebugUtilsMessengerEXT pfnVkDestroyDebugUtilsMessengerEXT;
 
-	if (func != nullptr) {
-		return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
-	} else {
-		return VK_ERROR_EXTENSION_NOT_PRESENT;
-	}
+// Vulkan proxy functions.
+VKAPI_ATTR inline VkResult VKAPI_CALL CreateDebugUtilsMessengerEXT(VkInstance instance, 
+                                                                   const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, 
+                                                                   const VkAllocationCallbacks* pAllocator, 
+                                                                   VkDebugUtilsMessengerEXT* pDebugMessenger)
+{
+	return pfnVkCreateDebugUtilsMessengerEXT(instance, pCreateInfo, pAllocator, pDebugMessenger);
 }
 
-inline void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
-	const auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
-
-	if (func != nullptr) {
-		func(instance, debugMessenger, pAllocator);
-	}
+VKAPI_ATTR inline void VKAPI_CALL DestroyDebugUtilsMessengerEXT(vk::Instance instance, vk::DebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+	return pfnVkDestroyDebugUtilsMessengerEXT(instance, debugMessenger, pAllocator);
 }
 
 struct QueueFamilyIndices {
@@ -61,9 +59,9 @@ struct QueueFamilyIndices {
 };
 
 struct SwapChainSupportDetails {
-	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
+	vk::SurfaceCapabilitiesKHR capabilities;
+	std::vector<vk::SurfaceFormatKHR> formats;
+	std::vector<vk::PresentModeKHR> presentModes;
 };
 
 class AtomCore {
@@ -93,59 +91,61 @@ private:
 	void drawFrame();
 
 	[[nodiscard]] bool checkValidationLayerSupport() const;
-	[[nodiscard]] bool checkDeviceExtensionSupport(VkPhysicalDevice) const;
+	[[nodiscard]] bool checkDeviceExtensionSupport(vk::PhysicalDevice) const;
 	[[nodiscard]] std::vector<const char*> getRequiredExtensions() const;
-	bool isDeviceGucci(VkPhysicalDevice) const;
+	bool isDeviceGucci(vk::PhysicalDevice) const;
 
-	QueueFamilyIndices findQueueFamilies(VkPhysicalDevice) const;
-	SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice) const;
+	QueueFamilyIndices findQueueFamilies(vk::PhysicalDevice) const;
+	SwapChainSupportDetails querySwapChainSupport(vk::PhysicalDevice) const;
 
 	static std::vector<char> readFile(const std::string&);
 
-	VkShaderModule createShaderModule(const std::vector<char>&) const;
+	vk::ShaderModule createShaderModule(const std::vector<char>&) const;
 
-	void recordCommandBuffer(VkCommandBuffer, uint32_t);
+	void recordCommandBuffer(vk::CommandBuffer, uint32_t);
 
 	// Swap Chain Config
-	VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>&);
-	VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>&);
-	VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR&) const;
+	vk::SurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>&);
+	vk::PresentModeKHR chooseSwapPresentMode(const std::vector<vk::PresentModeKHR>&);
+	vk::Extent2D chooseSwapExtent(const vk::SurfaceCapabilitiesKHR&) const;
 
 	// Debug stuff
-	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, const VkDebugUtilsMessengerCallbackDataEXT*, void*);
+	static VKAPI_ATTR vk::Bool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT, VkDebugUtilsMessageTypeFlagsEXT, const VkDebugUtilsMessengerCallbackDataEXT*, void*);
 	void setupDebugMessenger();
-	void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT&);
+	void populateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT&);
 	void outputExtensionStatus(const std::vector<const char*>&) const;
 
-	// members
+
+
+	/****************MEMBERS*******************/
 	GLFWwindow* mWindow;
-	VkInstance mInstance;
-	VkPhysicalDevice mPhysicalDevice = VK_NULL_HANDLE;
-	VkDevice mLogicalDevice;
-	VkQueue mGraphicsQueue;
-	VkQueue mPresentQueue;
-	VkSurfaceKHR mSurface;
-	VkSwapchainKHR mSwapchain;
-	std::vector<VkImage> mSwapchainImages;
-	std::vector<VkImageView> mSwapchainImageViews;
+	vk::Instance mInstance;
+	vk::PhysicalDevice mPhysicalDevice = VK_NULL_HANDLE;
+	vk::Device mLogicalDevice;
+	vk::Queue mGraphicsQueue;
+	vk::Queue mPresentQueue;
+	vk::SurfaceKHR mSurface;
+	vk::SwapchainKHR mSwapchain;
+	std::vector<vk::Image> mSwapchainImages;
+	std::vector<vk::ImageView> mSwapchainImageViews;
 
-	VkCommandPool mCommandPool;
-	VkCommandBuffer mCommandBuffer;
+	vk::CommandPool mCommandPool;
+	vk::CommandBuffer mCommandBuffer;
 
-	VkFormat mSwapchainImageFormat;
-	VkExtent2D mSwapchainExtent;
-	std::vector<VkFramebuffer> mSwapchainFramebuffers;
+	vk::Format mSwapchainImageFormat;
+	vk::Extent2D mSwapchainExtent;
+	std::vector<vk::Framebuffer> mSwapchainFramebuffers;
 
-	VkRenderPass mRenderPass;
-	VkPipelineLayout mPipelineLayout;
-	VkPipeline mGraphicsPipeline;
+	vk::RenderPass mRenderPass;
+	vk::PipelineLayout mPipelineLayout;
+	vk::Pipeline mGraphicsPipeline;
 
 	// Sync Objects
-	VkSemaphore mImageAvailableS;
-	VkSemaphore mRenderFinishedS;
-	VkFence mInFlightF;
+	vk::Semaphore mImageAvailableS;
+	vk::Semaphore mRenderFinishedS;
+	vk::Fence mInFlightF;
 
-	VkDebugUtilsMessengerEXT mDebugMessenger;
+	vk::DebugUtilsMessengerEXT mDebugMessenger;
 
 	vec2I mViewSize;
 	const std::vector<const char*> mValidationLayers = {
