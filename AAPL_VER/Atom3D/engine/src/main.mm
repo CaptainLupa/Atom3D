@@ -5,14 +5,14 @@
 //  Created by Jens Eckert on 10/4/23.
 //
 
-#include "AtomCore.hpp"
+#include "Core.hpp"
 
 #include <iostream>
 
 int main() {
     
     @autoreleasepool {
-        Atom::AtomCore engine;
+        Atom::Core engine;
         
         engine.init();
         engine.run();

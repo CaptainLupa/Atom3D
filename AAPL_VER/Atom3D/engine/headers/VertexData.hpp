@@ -12,6 +12,8 @@
 
 using namespace simd;
 
+namespace Atom {
+
 struct VertexData {
     float4 position;
     float2 textureCoords;
@@ -22,5 +24,7 @@ struct TransformData {
     float4x4 viewMatrix;
     float4x4 perspectiveMatrix;
 };
+
+}
 
 #endif /* VertexData_h */

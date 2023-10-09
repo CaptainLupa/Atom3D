@@ -14,17 +14,19 @@
 #include <iostream>
 
 namespace Atom {
-    class Texture {
-    public:
-        Texture(const char*, MTL::Device*);
-        ~Texture();
-        MTL::Texture* texture;
-        int width, height, channels;
-        
-    private:
-        MTL::Device* mDevice;
-    };
+
+class Texture {
+public:
+    Texture(const char*, MTL::Device*);
+    ~Texture();
+    MTL::Texture* texture;
+    int width, height, channels;
+    
+private:
+    MTL::Device* mDevice;
 };
+
+}
 
 
 

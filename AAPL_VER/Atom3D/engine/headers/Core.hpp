@@ -35,9 +35,9 @@
 
 namespace Atom {
     
-class AtomCore {
+class Core {
 public:
-    AtomCore() = default;
+    Core() = default;
     
     void init();
     void run();
@@ -50,6 +50,7 @@ private:
     void createTriangle();
     void createSquare();
     void createCube();
+    void createCubeIndexed();
     
     void createDefaultLib();
     void createCommandQueue();
@@ -80,6 +81,7 @@ private:
     
     MTL::Buffer* mVertexBuffer;
     MTL::Buffer* mTransformBuffer;
+    MTL::Buffer* mIndexBuffer;
     MTL::DepthStencilState* mDepthStencilState;
     MTL::RenderPassDescriptor* mRenderPassDescriptor;
     MTL::Texture* mMSAARenderTargetTexture;

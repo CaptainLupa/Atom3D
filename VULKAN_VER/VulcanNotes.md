@@ -4,21 +4,21 @@
 
 Uses *vulkan.hpp* style of implementation rather than plain C like the website.
 So `vk::Instance` rather than `VkInstance`.
-## Create `VkInstance` and `VkPhysicalDevice`
+## Create `vk::Instance` and `vk::PhysicalDevice`
 
-- `VkInstance` used to setup the API
-- `VkPhysicalDevice` is a reference to the actual GPU
+- `vk::Instance` used to setup the API
+- `vk::PhysicalDevice` is a reference to the actual GPU
 
 ## Soft Device and Queues
 
-- A `VkDevice` is used to represent the GPU(mLogicalDevice).
-- Most render calls will be passed through a `VkQueue`
-- `VkQueue` can be many different kinds, for basic rendering you need a present and graphics queue.
+- A `vk::Device` is used to represent the GPU in a more abstract way.
+- Most render calls will be passed through a `vk::Queue`
+- `vk::Queue` can be many different kinds, for basic rendering you need a present and graphics queue.
 
 ## Window and Swap Chain
 
 - Use *GLFW* for windowing.
-- Need a `VkSurfaceKHR` and `VkSwapChainKHR` to actually render to a window.
+- Need a `vk::SurfaceKHR` and `vk::SwapChainKHR` to actually render to a window.
 - Swap chain makes sure that we render to a different frame than that which is on the screen.
 
 ## Image views and Frame Buffers
@@ -46,8 +46,8 @@ So `vk::Instance` rather than `VkInstance`.
 
 ## Draw loop
 
-- Get image from swapchain with `vkAcquireNextImageKHR()`, select the right Command Buffer and commit it to the Graphics Queue with `vkQueueSubmit()`.
-- Return the image to swapchain and present with `vkQueuePresentKHR()`.
+- Get image from swapchain with `VkAcquireNextImageKHR()`, select the right Command Buffer and commit it to the Graphics Queue with `vkQueueSubmit()`.
+- Return the image to swapchain and present with `VkQueuePresentKHR()`.
 - Also do sync work with Fences and Semaphore objects.
 
 
@@ -69,7 +69,7 @@ So `vk::Instance` rather than `VkInstance`.
 
 ## `setupDebugMessenger`
 
-- Creates a `VkDebugUtilsMessengerEXT` object for Vulkan API error logging.
+- Creates a `vk::DebugUtilsMessengerEXT` object for Vulkan API error logging.
 - Severity and Type bits can be seen in `populateDebugMessengerCreateInfo` method.
 
 ## `debugCallback`

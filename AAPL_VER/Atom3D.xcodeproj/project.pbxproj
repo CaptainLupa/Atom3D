@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2102AB452ACE082C00061408 /* AtomCore.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB442ACE082C00061408 /* AtomCore.mm */; settings = {COMPILER_FLAGS = "-v"; }; };
+		2102AB452ACE082C00061408 /* Core.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB442ACE082C00061408 /* Core.mm */; settings = {COMPILER_FLAGS = "-v"; }; };
 		2102AB482ACE297300061408 /* mtl_impl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB472ACE297300061408 /* mtl_impl.cpp */; settings = {COMPILER_FLAGS = "-v"; }; };
 		2102AB4A2ACE2A3500061408 /* simple.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB492ACE2A3500061408 /* simple.metal */; settings = {COMPILER_FLAGS = "-v"; }; };
 		2102AB502ACEE2AD00061408 /* stbi_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2102AB4F2ACEE2AD00061408 /* stbi_image.cpp */; settings = {COMPILER_FLAGS = "-v"; }; };
@@ -19,6 +19,7 @@
 		2188D82A2ACDF4B6007A1E53 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2188D8292ACDF4B6007A1E53 /* Metal.framework */; };
 		2188D82C2ACDF4BC007A1E53 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2188D82B2ACDF4BC007A1E53 /* QuartzCore.framework */; };
 		21ADDE472ACF4E1200719C76 /* AAPLMathUtilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21ADDE452ACF4E1200719C76 /* AAPLMathUtilities.cpp */; settings = {COMPILER_FLAGS = "-v"; }; };
+		21BAD70C2AD43CC900FA0177 /* Object.mm in Sources */ = {isa = PBXBuildFile; fileRef = 21BAD70A2AD43CC900FA0177 /* Object.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -45,8 +46,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		2102AB432ACE080200061408 /* AtomCore.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = AtomCore.hpp; sourceTree = "<group>"; };
-		2102AB442ACE082C00061408 /* AtomCore.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AtomCore.mm; sourceTree = "<group>"; };
+		2102AB432ACE080200061408 /* Core.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Core.hpp; sourceTree = "<group>"; };
+		2102AB442ACE082C00061408 /* Core.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Core.mm; sourceTree = "<group>"; };
 		2102AB462ACE267D00061408 /* Atom3D.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Atom3D.entitlements; sourceTree = "<group>"; };
 		2102AB472ACE297300061408 /* mtl_impl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mtl_impl.cpp; sourceTree = "<group>"; };
 		2102AB492ACE2A3500061408 /* simple.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = simple.metal; sourceTree = "<group>"; };
@@ -66,6 +67,8 @@
 		21ADDE442ACF386A00719C76 /* mc_grass.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = mc_grass.jpeg; sourceTree = "<group>"; };
 		21ADDE452ACF4E1200719C76 /* AAPLMathUtilities.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AAPLMathUtilities.cpp; sourceTree = "<group>"; };
 		21ADDE462ACF4E1200719C76 /* AAPLMathUtilities.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AAPLMathUtilities.h; sourceTree = "<group>"; };
+		21BAD70A2AD43CC900FA0177 /* Object.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Object.mm; sourceTree = "<group>"; };
+		21BAD70B2AD43CC900FA0177 /* Object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,15 +89,10 @@
 		2102AB4C2ACEE20B00061408 /* engine */ = {
 			isa = PBXGroup;
 			children = (
+				21BAD70F2AD43F5C00FA0177 /* shaders */,
+				21BAD70E2AD43F4000FA0177 /* headers */,
+				21BAD70D2AD43F3900FA0177 /* src */,
 				2102AB552ACEEDEE00061408 /* assets */,
-				2188D81E2ACDF3F6007A1E53 /* main.mm */,
-				2102AB432ACE080200061408 /* AtomCore.hpp */,
-				2102AB442ACE082C00061408 /* AtomCore.mm */,
-				2102AB472ACE297300061408 /* mtl_impl.cpp */,
-				2102AB492ACE2A3500061408 /* simple.metal */,
-				2102AB512ACEE30900061408 /* Texture.cpp */,
-				2102AB522ACEE30900061408 /* Texture.hpp */,
-				2102AB542ACEEC9600061408 /* VertexData.hpp */,
 			);
 			path = engine;
 			sourceTree = "<group>";
@@ -166,6 +164,37 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		21BAD70D2AD43F3900FA0177 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				2188D81E2ACDF3F6007A1E53 /* main.mm */,
+				21BAD70A2AD43CC900FA0177 /* Object.mm */,
+				2102AB442ACE082C00061408 /* Core.mm */,
+				2102AB472ACE297300061408 /* mtl_impl.cpp */,
+				2102AB512ACEE30900061408 /* Texture.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		21BAD70E2AD43F4000FA0177 /* headers */ = {
+			isa = PBXGroup;
+			children = (
+				21BAD70B2AD43CC900FA0177 /* Object.hpp */,
+				2102AB432ACE080200061408 /* Core.hpp */,
+				2102AB522ACEE30900061408 /* Texture.hpp */,
+				2102AB542ACEEC9600061408 /* VertexData.hpp */,
+			);
+			path = headers;
+			sourceTree = "<group>";
+		};
+		21BAD70F2AD43F5C00FA0177 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				2102AB492ACE2A3500061408 /* simple.metal */,
+			);
+			path = shaders;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -226,7 +255,8 @@
 			files = (
 				2188D81F2ACDF3F6007A1E53 /* main.mm in Sources */,
 				2102AB482ACE297300061408 /* mtl_impl.cpp in Sources */,
-				2102AB452ACE082C00061408 /* AtomCore.mm in Sources */,
+				21BAD70C2AD43CC900FA0177 /* Object.mm in Sources */,
+				2102AB452ACE082C00061408 /* Core.mm in Sources */,
 				2102AB532ACEE30900061408 /* Texture.cpp in Sources */,
 				21ADDE472ACF4E1200719C76 /* AAPLMathUtilities.cpp in Sources */,
 				2102AB4A2ACE2A3500061408 /* simple.metal in Sources */,

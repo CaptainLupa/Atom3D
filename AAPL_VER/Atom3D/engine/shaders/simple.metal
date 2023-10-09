@@ -8,7 +8,7 @@
 #include <metal_stdlib>
 using namespace metal;
 
-#include "VertexData.hpp"
+#include "../headers/VertexData.hpp"
 
 struct VertexOut {
     float4 position [[position]];
@@ -16,8 +16,8 @@ struct VertexOut {
 };
 
 vertex VertexOut vertexShader(uint vertexId [[vertex_id]],
-                              constant VertexData* vData,
-                              constant TransformData* tData) {
+                              constant Atom::VertexData* vData,
+                              constant Atom::TransformData* tData) {
     VertexOut out;
     out.position = tData->perspectiveMatrix * tData->viewMatrix * tData->modelMatrix * vData[vertexId].position;
     out.textureCoords = vData[vertexId].textureCoords;
