@@ -2,6 +2,6 @@
 Cross Platform Graphics Engine for Metal and (eventually) Vulkan graphics API's
 
 ## Status
-Apple: Currently nonfunctional due to fucking xcode not telling me what's wrong with it.
+Apple: Working cube rotate. Trying to figure out indexed cube rendering with a texture.
 
-Vulkan: Unimplemented.
+Vulkan: AtomCore class drawing a triangle. Working on moving to C++ bindings instead of C, then going 3D and expanding to object classes etc.
